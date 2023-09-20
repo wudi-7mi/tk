@@ -10,15 +10,6 @@ from scipy import signal
 # SER
 from ser import predict
 
-true_emotion = {
-    "angry"     : 0,
-    "happy"     : 0,
-    "sad"       : 0,
-    "surprise"  : 0,
-    "neutral"   : 0,
-    "fear"      : 0,
-}
-
 audio_file = "record.wav"
 
 async def main():
