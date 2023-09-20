@@ -1,0 +1,16 @@
+model: lstm
+
+class_labels: ["angry", "fear", "happy", "neutral", "sad", "surprise"]  # 情感标签
+
+# Feature
+feature_folder: ./ser/features   # 特征存储文件夹
+feature_method: l           # 特征提取方式
+
+# Checkpoints
+checkpoint_path: ./ser/checkpoints       # checkpoint 存储路径
+checkpoint_name: LSTM_LIBROSA_IS10  # checkpoint 文件名
+
+# Parameters
+rnn_size: 128  # LSTM 隐藏层大小
+hidden_size: 32
+dropout: 0.5

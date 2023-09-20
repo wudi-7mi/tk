@@ -7,6 +7,9 @@ import soundfile as sf
 import numpy as np
 from scipy import signal
 
+# SER
+from ser import predict
+
 true_emotion = {
     "angry"     : 0,
     "happy"     : 0,
@@ -16,6 +19,7 @@ true_emotion = {
     "fear"      : 0,
 }
 
+audio_file = "record.wav"
 
 async def main():
 
@@ -29,11 +33,10 @@ async def main():
         if not text:
             continue
         
-        
         t_ser = asyncio.create_task(go_ser())
         res_dui = await go_dui()
-
         res_ser = await t_ser
+
         await cmp_emotion(v1=res_ser, v2=res_dui)
 
         await show_emotion_to_robot()
@@ -48,9 +51,9 @@ async def receive_wakeup_signal(name="recv_wakeup"):
 
 
 async def go_ser(name="go_ser"):
-    print(f"{name}_start")
-    await asyncio.sleep(2)
-    print(f"{name}_end")
+
+    result = predict.infer(audio_path=audio_file)
+    
     return 1
     ...
 
@@ -101,7 +104,7 @@ async def go_asr() -> str:
     print(result)
     audio_res = np.concatenate(audio_res)
     audio_data_resampled = signal.resample(audio_res, int(len(audio_res) * 44100 / sample_rate))
-    sf.write("output.wav", audio_data_resampled, 44100)
+    sf.write(audio_file, audio_data_resampled, 44100)
 
     return result
 
@@ -123,15 +126,15 @@ async def go_dui(name="go_dui"):
 
 async def cmp_emotion(ser_emo, dui_emo, name="cmp_emotion"):
     
-    if ser_emo.emo_type == dui_emo.emo_type:
-        if ser_emo.value > 200:
-            true_emotion[ser_emo.emo_type] = ser_emo.value
-        else:
-            true_emotion[ser_emo.emo_type] = 200
-    else:
-        ...
+    # if ser_emo.emo_type == dui_emo.emo_type:
+    #     if ser_emo.value > 200:
+    #         true_emotion[ser_emo.emo_type] = ser_emo.value
+    #     else:
+    #         true_emotion[ser_emo.emo_type] = 200
+    # else:
+    #     ...
         
-    print(true_emotion[ser_emo.emo_type])
+    # print(true_emotion[ser_emo.emo_type])
     ...
 
 
