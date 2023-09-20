@@ -7,10 +7,15 @@ import soundfile as sf
 import numpy as np
 from scipy import signal
 
-# TTS
-from paddlespeech.cli.tts.infer import TTSExecutor
-tts = TTSExecutor()
-tts(text="你好", output="test.wav")
+true_emotion = {
+    "angry"     : 0,
+    "happy"     : 0,
+    "sad"       : 0,
+    "surprise"  : 0,
+    "neutral"   : 0,
+    "fear"      : 0,
+}
+
 
 async def main():
 
@@ -18,10 +23,14 @@ async def main():
         i = 0
         await receive_wakeup_signal()
 
-        t_asr = asyncio.create_task(go_asr())
+        text = await go_asr()
+        
+        # 没有识别到语音 进入休眠
+        if not text:
+            continue
+        
+        
         t_ser = asyncio.create_task(go_ser())
-
-        await t_asr
         res_dui = await go_dui()
 
         res_ser = await t_ser
@@ -37,12 +46,14 @@ async def receive_wakeup_signal(name="recv_wakeup"):
     return s
     ...
 
+
 async def go_ser(name="go_ser"):
     print(f"{name}_start")
     await asyncio.sleep(2)
     print(f"{name}_end")
     return 1
     ...
+
 
 async def go_asr() -> str:
     devices = sd.query_devices()
@@ -75,6 +86,8 @@ async def go_asr() -> str:
             result = recognizer.text
             i += 1
 
+            # 通过调节数字控制时间（不精准）
+            # 逻辑：没有读取到语音并且过去5秒->结束；读取到语音并且过去2秒->结束
             if i == 50 and not result:
                 break
             elif i == 20 and result:
@@ -83,7 +96,7 @@ async def go_asr() -> str:
             if last_result != result:
                 i = 0
                 last_result = result
-                # print("\r{}".format(result), end="", flush=True)
+                print("\r{}".format(result), end="", flush=True)
 
     print(result)
     audio_res = np.concatenate(audio_res)
@@ -93,9 +106,12 @@ async def go_asr() -> str:
     return result
 
 
-
 async def go_tts(text:str):
-    tts(text=text, output="output_tts.wav")
+    print(f"go_tts_start")
+    await asyncio.sleep(1)
+    print(f"go_tts_end")
+    return 1
+
 
 async def go_dui(name="go_dui"):
     print(f"{name}_start")
@@ -104,15 +120,20 @@ async def go_dui(name="go_dui"):
     return 1
     ...
 
-async def cmp_emotion(v1, v2, name="cmp_emotion"):
-    print(f"{name}_start")
-    await asyncio.sleep(1)
-    if v1 == v2:
-        print('Yes')
+
+async def cmp_emotion(ser_emo, dui_emo, name="cmp_emotion"):
+    
+    if ser_emo.emo_type == dui_emo.emo_type:
+        if ser_emo.value > 200:
+            true_emotion[ser_emo.emo_type] = ser_emo.value
+        else:
+            true_emotion[ser_emo.emo_type] = 200
     else:
-        print('No')
-    print(f"{name}_end")
+        ...
+        
+    print(true_emotion[ser_emo.emo_type])
     ...
+
 
 async def show_emotion_to_robot(name="show_emo"):
     print(f"{name}_start")
