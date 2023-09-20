@@ -37,7 +37,7 @@ async def main():
         res_dui = await go_dui()
         res_ser = await t_ser
 
-        await cmp_emotion(v1=res_ser, v2=res_dui)
+        await cmp_emotion(ser_emo=res_ser, dui_emo=res_dui)
 
         await show_emotion_to_robot()
         i += 1
@@ -125,7 +125,9 @@ async def go_dui(name="go_dui"):
 
 
 async def cmp_emotion(ser_emo, dui_emo, name="cmp_emotion"):
-    
+    print(f"{name}_start")
+    await asyncio.sleep(1)
+    print(f"{name}_end")
     # if ser_emo.emo_type == dui_emo.emo_type:
     #     if ser_emo.value > 200:
     #         true_emotion[ser_emo.emo_type] = ser_emo.value
