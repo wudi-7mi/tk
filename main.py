@@ -7,7 +7,7 @@ import soundfile as sf
 import numpy as np
 from scipy import signal
 
-# SER
+# SER 该部分有较大修改空间 目前是能用的状态
 from ser import predict
 
 audio_file = "record.wav"
@@ -119,15 +119,6 @@ async def cmp_emotion(ser_emo, dui_emo, name="cmp_emotion"):
     print(f"{name}_start")
     await asyncio.sleep(1)
     print(f"{name}_end")
-    # if ser_emo.emo_type == dui_emo.emo_type:
-    #     if ser_emo.value > 200:
-    #         true_emotion[ser_emo.emo_type] = ser_emo.value
-    #     else:
-    #         true_emotion[ser_emo.emo_type] = 200
-    # else:
-    #     ...
-        
-    # print(true_emotion[ser_emo.emo_type])
     ...
 
 

@@ -1,0 +1,8 @@
+sherpa-ncnn
+sounddevice
+soundfile
+tensorflow
+scikit-learn
+librosa
+joblib
+pyyaml
